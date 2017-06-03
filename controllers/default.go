@@ -37,6 +37,8 @@ func (main *MainController) View() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println("main", main)
+	fmt.Println("st", starttime, "et", endtime)
 
 	price := models.Price{Starttime: starttime, Endtime: endtime, Avgprice: avgprice}
 
