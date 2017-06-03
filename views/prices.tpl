@@ -6,7 +6,7 @@
  </div>
 </div>
 </div>
-{{.starttime}}
+
 <div class="container">
   <div class="row">
     <table class="table">
