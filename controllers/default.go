@@ -31,6 +31,8 @@ func (main *MainController) View() {
 	main.LayoutSections["Footer"] = "footer.tpl"
 	main.TplName = "prices.tpl"
 
+	// May use this code if you write test for HTTP call with parameters in request:
+
 	// var p models.Price
 	// json.Unmarshal(main.Ctx.Input.RequestBody, &p)
 	// starttime = p.Starttime
