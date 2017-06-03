@@ -83,12 +83,12 @@
   <p>          
     <form role="form" id="user" method="POST" action="/prices">
       <div class="form-group {{if .Errors.Name}}has-error has-feedback{{end}}">
-        <label for="starttime">Start Time (Format: yyyymmddhhss. Ex: 201506031105)</label>
+        <label for="starttime">Start Time (Format: yyyymmddhhmm. Ex: 201506031105)</label>
         <input name="starttime" type="text" value="201506031105" class="form-control" tabindex="1" />
       </div>
       
       <div class="form-group">
-        <label for="endtime">End Time (Format: yyyymmddhhss. Ex: 201506031200)</label>
+        <label for="endtime">End Time (Format: yyyymmddhhmm. Ex: 201506031200)</label>
         <input name="endtime" type="text" value="201506031200" class="form-control" tabindex="2" />
       </div>
       
