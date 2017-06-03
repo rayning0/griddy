@@ -81,7 +81,7 @@
     </div>
   </header>
   <p>          
-    <form role="form" id="user" method="POST" action="/prices">
+    <form role="form" id="user" method="POST" action="/prices", style="width: 400px; margin: 0 auto;">
       <div class="form-group {{if .Errors.Name}}has-error has-feedback{{end}}">
         <label for="starttime">Start Time (Format: yyyymmddhhmm. Ex: 201506031105)</label>
         <input name="starttime" type="text" value="201506031105" class="form-control" tabindex="1" />
