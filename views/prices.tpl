@@ -25,7 +25,7 @@
           <td>{{$record.Id}}</td>
           <td>{{$record.Starttime}}</td>
           <td>{{$record.Endtime}}</td>
-          <td>{{$record.Avgprice}}</td>
+          <td>{{printf "%.1f" $record.Avgprice}}</td>
         </tr>
         {{end}}
       </tbody>

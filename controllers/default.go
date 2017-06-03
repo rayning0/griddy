@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"griddy/models"
-	"io/ioutil"
-	"strconv"
 
 	"net/http"
 
@@ -35,7 +33,10 @@ func (main *MainController) View() {
 
 	starttime := main.GetString("starttime")
 	endtime := main.GetString("endtime")
-	avgprice := getAvgPrice(starttime, endtime)
+	avgprice, err := getAvgPrice(starttime, endtime)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	price := models.Price{Starttime: starttime, Endtime: endtime, Avgprice: avgprice}
 
@@ -50,41 +51,50 @@ func (main *MainController) View() {
 	}
 }
 
-type arrayOfMaps []map[string]string
-
-func getAvgPrice(starttime, endtime string) float64 {
+func getAvgPrice(starttime, endtime string) (float64, error) {
 	response, err := http.Get("https://hourlypricing.comed.com/api?type=5minutefeed&datestart=" + starttime + "&dateend=" + endtime)
 	if err != nil {
-		fmt.Println(err)
+		return 0, err
 	}
 	defer response.Body.Close()
 
-	energyJSON, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		fmt.Println(err)
-	}
+	// to simplify parsing floats given as string values in JSON, use json.Number
+	var prices []map[string]json.Number
 
-	var energyPrices arrayOfMaps
-	err = json.Unmarshal(energyJSON, &energyPrices)
+	// 1. response.Body is an io.ReadCloser interface
+	// 2. json.NewDecoder takes in io.Reader and returns Decoder
+	// 3. Decode reads the next JSON-encoded value from its input and
+	// stores it in the value pointed to by prices.
+
+	// This also applies to handling this array of JSON objects:
+	// https://golang.org/pkg/encoding/json/#Decoder.Decode
+
+	if err := json.NewDecoder(response.Body).Decode(&prices); err != nil {
+		return 0, err
+	}
 
 	fmt.Println("Energy prices between", starttime, "and", endtime)
-	fmt.Println(energyPrices)
+	fmt.Println(prices)
 
-	var sum float64
-	var size int
-	for _, p := range energyPrices {
-		price, _ := strconv.ParseFloat(p["price"], 64)
-		sum += price
-		size++
+	sum := 0.0
+	for _, p := range prices {
+		f, err := p["price"].Float64()
+		if err != nil {
+			return 0, err
+		}
+		sum += f
 	}
-	avg := Truncate(sum / float64(size))
-	fmt.Println("Average price:", avg)
-	return avg
+
+	return Round(sum/float64(len(prices)), 0.1), nil
 }
 
-//Truncate a float to 2 levels of precision
-func Truncate(some float64) float64 {
-	return float64(int(some*10)) / 10
+//Rounds to nearest "unit"
+func Round(x, unit float64) float64 {
+	if x > 0 {
+		return float64(int64(x/unit+0.5)) * unit
+	}
+	//handles negative energy prices
+	return float64(int64(x/unit-0.5)) * unit
 }
 
 func (main *MainController) HelloSitepoint() {
