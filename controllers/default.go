@@ -31,14 +31,18 @@ func (main *MainController) View() {
 	main.LayoutSections["Footer"] = "footer.tpl"
 	main.TplName = "prices.tpl"
 
+	// var p models.Price
+	// json.Unmarshal(main.Ctx.Input.RequestBody, &p)
+	// starttime = p.Starttime
+	// endtime = p.Endtime
+
 	starttime := main.GetString("starttime")
 	endtime := main.GetString("endtime")
-	avgprice, err := getAvgPrice(starttime, endtime)
+
+	avgprice, err := GetAvgPrice(starttime, endtime)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("main", main)
-	fmt.Println("st", starttime, "et", endtime)
 
 	price := models.Price{Starttime: starttime, Endtime: endtime, Avgprice: avgprice}
 
@@ -53,7 +57,7 @@ func (main *MainController) View() {
 	}
 }
 
-func getAvgPrice(starttime, endtime string) (float64, error) {
+func GetAvgPrice(starttime, endtime string) (float64, error) {
 	response, err := http.Get("https://hourlypricing.comed.com/api?type=5minutefeed&datestart=" + starttime + "&dateend=" + endtime)
 	if err != nil {
 		return 0, err
@@ -75,7 +79,7 @@ func getAvgPrice(starttime, endtime string) (float64, error) {
 		return 0, err
 	}
 
-	fmt.Println("Energy prices between", starttime, "and", endtime)
+	fmt.Println("\nEnergy prices between", starttime, "and", endtime, "\n")
 	fmt.Println(prices)
 
 	sum := 0.0
